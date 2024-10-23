@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package pubsub;
+
+message PublisherConnectRequest {
+  string publisher_name = 1;
+}
+
+message PublisherConnectResponse {
+  repeated string topics = 1;
+}
+
+message CreateTopicRequest {
+  string publisher_name = 1;
+  string topic = 2;
+}
+
+message CreateTopicResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message PublishMessageRequest {
+  string publisher_name = 1;
+  string topic = 2;
+  string message = 3;
+}
+
+message PublishMessageResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message SubscriberConnectRequest {
+  string subscriber_name = 1;
+}
+
+message SubscriberConnectResponse {
+  repeated string topics = 1;
+  repeated Message offline_messages = 2;
+}
+
+message SubscribeToTopicRequest {
+  string subscriber_name = 1;
+  string topic = 2;
+}
+
+message SubscribeToTopicResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message Message {
+  string topic = 1;
+  string message = 2;
+}
+
+service BrokerService {
+  // Metode pentru Publisher
+  rpc ConnectPublisher(PublisherConnectRequest) returns (PublisherConnectResponse);
+  rpc CreateTopic(CreateTopicRequest) returns (CreateTopicResponse);
+  rpc PublishMessage(PublishMessageRequest) returns (PublishMessageResponse);
+
+  // Metode pentru Subscriber
+  rpc ConnectSubscriber(SubscriberConnectRequest) returns (SubscriberConnectResponse);
+  rpc SubscribeToTopic(SubscribeToTopicRequest) returns (SubscribeToTopicResponse);
+
+  // Streaming de mesaje către Subscriber
+  rpc ReceiveMessages(SubscriberConnectRequest) returns (stream Message);
+}
